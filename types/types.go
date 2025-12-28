@@ -543,9 +543,8 @@ type Node interface {
 	// Parameters:
 	// 参数：
 	//     ctx：上下文
-	//     rCtx：提供消息路由和工具函数的规则上下文
 	//     msg：此组件要处理的消息
-	OnMsg(ctx context.Context, rCtx RuleContext, msg RuleMsg) error
+	OnMsg(ctx context.Context, msg RuleMsg) (string, error)
 
 	// Destroy releases any resources held by the component when it's no longer needed.
 	// This method is called during rule chain shutdown, component updates, or engine destruction.

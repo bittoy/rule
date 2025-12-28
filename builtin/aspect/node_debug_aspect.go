@@ -87,7 +87,7 @@ func (aspect *NodeDebug) Type() string {
 //
 // PointCut 确定此切面应用于哪些节点。
 // Debug 切面无条件地应用于所有节点。
-func (aspect *NodeDebug) PointCut(ctx types.RuleContext, msg types.RuleMsg, relationType string) bool {
+func (aspect *NodeDebug) PointCut(nodeCtx types.NodeCtx, msg types.RuleMsg, relationType string) bool {
 	return true
 }
 
@@ -95,9 +95,9 @@ func (aspect *NodeDebug) PointCut(ctx types.RuleContext, msg types.RuleMsg, rela
 // and context information asynchronously to avoid blocking execution.
 //
 // Before 在节点处理之前执行。它异步记录传入消息和上下文信息，避免阻塞执行。
-func (aspect *NodeDebug) Before(ctx types.RuleContext, msg types.RuleMsg, relationType string) (types.RuleMsg, error) {
+func (aspect *NodeDebug) Before(nodeCtx types.NodeCtx, msg types.RuleMsg, relationType string) (types.RuleMsg, error) {
 	//异步记录In日志
-	fmt.Println("Before:", ctx.Self().Id(), ctx.Self().Type(), relationType, msg.GetInput())
+	fmt.Println("Before:", nodeCtx.Id(), nodeCtx.Type(), relationType, msg.GetInput())
 	return msg, nil
 }
 
@@ -105,7 +105,7 @@ func (aspect *NodeDebug) Before(ctx types.RuleContext, msg types.RuleMsg, relati
 // and any error that occurred during processing.
 //
 // After 在节点处理之后执行。它记录传出消息和处理过程中发生的任何错误。
-func (aspect *NodeDebug) After(ctx types.RuleContext, msg types.RuleMsg, relationType string) (types.RuleMsg, error) {
-	fmt.Println("After:", ctx.Self().Id(), ctx.Self().Type(), relationType, msg.GetInput())
+func (aspect *NodeDebug) After(nodeCtx types.NodeCtx, msg types.RuleMsg, relationType string) (types.RuleMsg, error) {
+	fmt.Println("After:", nodeCtx.Id(), nodeCtx.Type(), relationType, msg.GetInput())
 	return msg, nil
 }

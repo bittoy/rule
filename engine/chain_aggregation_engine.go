@@ -310,7 +310,7 @@ func (e *ChainAggregationEngine) onMsg(ctx context.Context, msg types.RuleMsg) e
 
 	// Process message with or without waiting
 	// 处理消息，可选择是否等待
-	if err := e.chainAggregationCtx.OnMsg(ctx, nil, msg); err != nil {
+	if _, err := e.chainAggregationCtx.OnMsg(ctx, msg); err != nil {
 		return err
 	}
 
@@ -323,8 +323,8 @@ func (e *ChainAggregationEngine) onMsg(ctx context.Context, msg types.RuleMsg) e
 func (e *ChainAggregationEngine) onBefore(msg types.RuleMsg) (types.RuleMsg, error) {
 	var err error
 	for _, aop := range e.beforeAspects {
-		if aop.PointCut(NewDefaultChainAggregationContext(e.chainAggregationCtx), msg) {
-			msg, err = aop.Before(NewDefaultChainAggregationContext(e.chainAggregationCtx), msg)
+		if aop.PointCut(e.chainAggregationCtx, msg) {
+			msg, err = aop.Before(e.chainAggregationCtx, msg)
 		}
 	}
 	return msg, err
@@ -335,8 +335,8 @@ func (e *ChainAggregationEngine) onBefore(msg types.RuleMsg) (types.RuleMsg, err
 func (e *ChainAggregationEngine) onAfter(msg types.RuleMsg) (types.RuleMsg, error) {
 	var err error
 	for _, aop := range e.afterAspects {
-		if aop.PointCut(NewDefaultChainAggregationContext(e.chainAggregationCtx), msg) {
-			msg, err = aop.After(NewDefaultChainAggregationContext(e.chainAggregationCtx), msg)
+		if aop.PointCut(e.chainAggregationCtx, msg) {
+			msg, err = aop.After(e.chainAggregationCtx, msg)
 
 		}
 	}

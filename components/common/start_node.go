@@ -62,8 +62,8 @@ func (x *StartNode) Init(ruleConfig types.Config, configuration types.Configurat
 }
 
 // OnMsg processes the incoming message and triggers the end callback.
-func (x *StartNode) OnMsg(ctx context.Context, rCtx types.RuleContext, msg types.RuleMsg) error {
-	return rCtx.TellNext(ctx, msg, types.DefaultRelationType)
+func (x *StartNode) OnMsg(ctx context.Context, msg types.RuleMsg) (string, error) {
+	return types.DefaultRelationType, nil
 }
 
 func (x *StartNode) Destroy() {

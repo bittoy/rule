@@ -87,7 +87,7 @@ func (aspect *ChainDebug) Type() string {
 //
 // PointCut 确定此切面应用于哪些节点。
 // Debug 切面无条件地应用于所有节点。
-func (aspect *ChainDebug) PointCut(ctx types.RuleContext, msg types.RuleMsg) bool {
+func (aspect *ChainDebug) PointCut(chainCtx types.ChainCtx, msg types.RuleMsg) bool {
 	return true
 }
 
@@ -95,9 +95,9 @@ func (aspect *ChainDebug) PointCut(ctx types.RuleContext, msg types.RuleMsg) boo
 // and context information asynchronously to avoid blocking execution.
 //
 // Before 在节点处理之前执行。它异步记录传入消息和上下文信息，避免阻塞执行。
-func (aspect *ChainDebug) Before(ctx types.RuleContext, msg types.RuleMsg) (types.RuleMsg, error) {
+func (aspect *ChainDebug) Before(chainCtx types.ChainCtx, msg types.RuleMsg) (types.RuleMsg, error) {
 	//异步记录In日志
-	fmt.Println("Before:", ctx.Self().Id(), ctx.Self().Type(), msg.GetInput(), msg.GetChainOutput())
+	fmt.Println("Before:", chainCtx.Id(), chainCtx.Type(), msg.GetInput(), msg.GetChainOutput())
 	return msg, nil
 }
 
@@ -105,8 +105,8 @@ func (aspect *ChainDebug) Before(ctx types.RuleContext, msg types.RuleMsg) (type
 // and any error that occurred during processing.
 //
 // After 在节点处理之后执行。它记录传出消息和处理过程中发生的任何错误。
-func (aspect *ChainDebug) After(ctx types.RuleContext, msg types.RuleMsg) (types.RuleMsg, error) {
+func (aspect *ChainDebug) After(chainCtx types.ChainCtx, msg types.RuleMsg) (types.RuleMsg, error) {
 	//异步记录In日志
-	fmt.Println("After:", ctx.Self().Id(), ctx.Self().Type(), msg.GetInput(), msg.GetChainOutput())
+	fmt.Println("After:", chainCtx.Id(), chainCtx.Type(), msg.GetInput(), msg.GetChainOutput())
 	return msg, nil
 }

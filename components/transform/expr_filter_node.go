@@ -114,22 +114,20 @@ func (x *ExprFilterNode) Init(ruleConfig types.Config, configuration types.Confi
 
 // OnMsg 处理消息，通过评估编译的表达式来过滤消息
 // OnMsg processes incoming messages by evaluating the compiled expression.
-func (x *ExprFilterNode) OnMsg(ctx context.Context, rCtx types.RuleContext, msg types.RuleMsg) error {
+func (x *ExprFilterNode) OnMsg(ctx context.Context, msg types.RuleMsg) (string, error) {
 	out, err := vm.Run(x.program, msg.GetInput())
 	if err != nil {
-		return types.NewEngineError(rCtx, msg, err)
+		return "", err
 	}
 	if result, ok := out.(bool); ok {
 		if result {
-			return rCtx.TellNext(ctx, msg, types.TrueRelationType)
+			return types.TrueRelationType, nil
 		} else {
-			return rCtx.TellNext(ctx, msg, types.FalseRelationType)
+			return types.FalseRelationType, nil
 		}
-
 	} else {
-		return types.NewEngineError(rCtx, msg, errors.New("返回类型不匹配"))
+		return "", errors.New("返回类型不匹配")
 	}
-
 }
 
 // Destroy 清理资源

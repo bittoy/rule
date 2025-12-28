@@ -92,7 +92,7 @@ func (aspect *ChainAggregationValidator) Type() string {
 	return "chainAggregationValidator"
 }
 
-func (aspect *ChainAggregationValidator) PointCut(ctx types.RuleContext, msg types.RuleMsg, relationType string) bool {
+func (aspect *ChainAggregationValidator) PointCut(chainAggregationCtx types.ChainAggregationCtx, msg types.RuleMsg) bool {
 	return true
 }
 

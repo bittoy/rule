@@ -107,7 +107,7 @@ func (a *MetricsAspect) New() types.Aspect {
 //
 // PointCut 确定此切面应用于哪些节点。
 // 对所有节点返回 true 以收集全面的指标。
-func (a *MetricsAspect) PointCut(ctx types.RuleContext, msg types.RuleMsg, relationType string) bool {
+func (a *MetricsAspect) PointCut(nodeCtx types.NodeCtx, msg types.RuleMsg, relationType string) bool {
 	return true
 }
 
@@ -120,7 +120,7 @@ func (a *MetricsAspect) PointCut(ctx types.RuleContext, msg types.RuleMsg, relat
 // 更新的指标：
 //   - CurrentActive: Incremented by 1  当前活跃数增加 1
 //   - TotalProcessed: Incremented by 1  总处理数增加 1
-func (a *MetricsAspect) Start(ctx types.RuleContext, msg types.RuleMsg) (types.RuleMsg, error) {
+func (a *MetricsAspect) Start(nodeCtx types.NodeCtx, msg types.RuleMsg) (types.RuleMsg, error) {
 	a.metrics.IncrementCurrent()
 	a.metrics.IncrementTotal()
 	return msg, nil
@@ -135,7 +135,7 @@ func (a *MetricsAspect) Start(ctx types.RuleContext, msg types.RuleMsg) (types.R
 // 更新的指标：
 //   - SuccessCount: Incremented if no error  如果没有错误则成功计数增加
 //   - FailureCount: Incremented if error occurred  如果发生错误则失败计数增加
-func (a *MetricsAspect) End(ctx types.RuleContext, msg types.RuleMsg, err error, relationType string) types.RuleMsg {
+func (a *MetricsAspect) End(nodeCtx types.NodeCtx, msg types.RuleMsg, err error, relationType string) types.RuleMsg {
 	if err != nil {
 		a.metrics.IncrementFailed()
 	} else {
@@ -152,7 +152,7 @@ func (a *MetricsAspect) End(ctx types.RuleContext, msg types.RuleMsg, err error,
 // Metrics Updated:
 // 更新的指标：
 //   - CurrentActive: Decremented by 1  当前活跃数减少 1
-func (a *MetricsAspect) Completed(ctx types.RuleContext, msg types.RuleMsg) types.RuleMsg {
+func (a *MetricsAspect) Completed(nodeCtx types.NodeCtx, msg types.RuleMsg) types.RuleMsg {
 	a.metrics.DecrementCurrent()
 	return msg
 }

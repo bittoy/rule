@@ -28,42 +28,6 @@ var (
 	_ types.OnChainBeforeInitAspect = (*ChainValidator)(nil)
 )
 
-// Validator is a rule chain initialization validation aspect that performs
-// comprehensive validation checks before rule chain creation. It ensures
-// rule chain integrity and prevents invalid configurations from being deployed.
-//
-// Validator 是规则链初始化验证切面，在规则链创建之前执行全面的验证检查。
-// 它确保规则链完整性并防止部署无效配置。
-//
-// Features:
-// 功能特性：
-//   - Pre-initialization validation  初始化前验证
-//   - Cycle detection in rule chains  规则链中的环检测
-//   - Endpoint node restrictions for sub-chains  子链的端点节点限制
-//   - Extensible validation rule system  可扩展的验证规则系统
-//   - Configurable validation behavior  可配置的验证行为
-//
-// Built-in Validation Rules:
-// 内置验证规则：
-//   - Sub-chains cannot contain endpoint nodes  子链不能包含端点节点
-//   - Cycle detection (unless explicitly allowed)  环检测（除非明确允许）
-//   - Node existence validation  节点存在性验证
-//   - Connection integrity checks  连接完整性检查
-//
-// Usage:
-// 使用方法：
-//
-//	// Apply validator to rule engine
-//	// 为规则引擎应用验证器
-//	config := types.NewConfig().WithAspects(&Validator{})
-//	engine := rulego.NewRuleEngine(config)
-//
-//	// Add custom validation rules
-//	// 添加自定义验证规则
-//	Rules.AddRule(func(config types.Config, def *types.RuleChain) error {
-//		// Custom validation logic
-//		return nil
-//	})
 type ChainValidator struct {
 }
 
@@ -92,7 +56,7 @@ func (aspect *ChainValidator) Type() string {
 	return "chainValidator"
 }
 
-func (aspect *ChainValidator) PointCut(ctx types.RuleContext, msg types.RuleMsg, relationType string) bool {
+func (aspect *ChainValidator) PointCut(chainCtx types.ChainCtx, msg types.RuleMsg) bool {
 	return true
 }
 
@@ -138,20 +102,6 @@ type chainRules struct {
 	sync.RWMutex                                                     // Reader-writer mutex for thread safety  用于线程安全的读写互斥锁
 }
 
-// NewRules creates a new rules registry with default validation rules pre-configured.
-// It includes built-in rules for endpoint node restrictions and cycle detection.
-//
-// NewRules 创建一个预配置默认验证规则的新规则注册表。
-// 它包括端点节点限制和环检测的内置规则。
-//
-// Default Rules:
-// 默认规则：
-//  1. Sub-chains cannot contain endpoint nodes  子链不能包含端点节点
-//  2. Cycle detection (when not explicitly allowed)  环检测（当未明确允许时）
-//
-// Returns:
-// 返回：
-//   - *rules: Configured rules registry  配置好的规则注册表
 func NewChainRules() *chainRules {
 	r := &chainRules{}
 	//建环检测

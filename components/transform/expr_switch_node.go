@@ -112,9 +112,12 @@ func (x *ExprSwitchNode) Init(config types.Config, configuration types.Configura
 		return err
 	}
 
-	var caseScript = genExprScriptByCases(x.Config.Cases)
 	var script = strings.TrimSpace(x.Config.Script)
 	if len(script) == 0 {
+		caseScript, err := genExprScriptByCases(x.Config.Cases)
+		if err != nil {
+			return err
+		}
 		script = caseScript
 	}
 
@@ -130,15 +133,15 @@ func (x *ExprSwitchNode) Init(config types.Config, configuration types.Configura
 
 // OnMsg 处理消息，按顺序评估case表达式并路由到第一个匹配的case或默认关系
 // OnMsg processes incoming messages by evaluating case expressions sequentially.
-func (x *ExprSwitchNode) OnMsg(ctx context.Context, rCtx types.RuleContext, msg types.RuleMsg) error {
+func (x *ExprSwitchNode) OnMsg(ctx context.Context, msg types.RuleMsg) (string, error) {
 	out, err := vm.Run(x.program, msg.GetInput())
 	if err != nil {
-		return types.NewEngineError(rCtx, msg, err)
+		return "", err
 	}
 	if result, ok := out.(string); ok {
-		return rCtx.TellNext(ctx, msg, result)
+		return result, nil
 	}
-	return types.NewEngineError(rCtx, msg, errors.New("返回类型不匹配"))
+	return "", errors.New("返回类型不匹配")
 }
 
 // Destroy 清理资源

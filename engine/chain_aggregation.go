@@ -127,7 +127,7 @@ func (rc *ChainAggregationCtx) Init(_ types.Config, configuration types.Configur
 }
 
 // OnMsg processes incoming messages
-func (rc *ChainAggregationCtx) OnMsg(ctx context.Context, rCtx types.RuleContext, msg types.RuleMsg) error {
+func (rc *ChainAggregationCtx) OnMsg(ctx context.Context, msg types.RuleMsg) (string, error) {
 	var output = map[string]map[string]any{}
 	var chainResult types.ChainResult
 	var chainAggregationResult types.ChainAggregationResult
@@ -135,25 +135,25 @@ func (rc *ChainAggregationCtx) OnMsg(ctx context.Context, rCtx types.RuleContext
 	for _, chain := range rc.chains {
 		msg, err := rc.onBefore(chain, msg)
 		if err != nil {
-			return err
+			return "", err
 		}
-		if err = chain.OnMsg(ctx, rCtx, msg); err != nil {
+		if _, err = chain.OnMsg(ctx, msg); err != nil {
 			if chain.TerminalOnErr() {
-				return err
+				return "", err
 			} else {
 				fmt.Printf("chain:%s, err%v\n", chain.Id(), err)
 			}
 		}
 		msg, err = rc.onAfter(chain, msg)
 		if err != nil {
-			return err
+			return "", err
 		}
 
 		output[chain.Id()] = msg.GetChainOutput()
 
 		err = maps.Map2Struct(msg.GetChainOutput(), &chainResult)
 		if err != nil {
-			return err
+			return "", err
 		}
 
 		if chainResult.Terminate {
@@ -176,7 +176,7 @@ func (rc *ChainAggregationCtx) OnMsg(ctx context.Context, rCtx types.RuleContext
 	msg.SetChainOutput(nil)
 	msg.SetChainAggregationOutput(output)
 	msg.SetAggregationOutput(aggregationOutput)
-	return nil
+	return "", nil
 }
 
 // Destroy cleans up resources and executes destroy aspects
@@ -194,11 +194,11 @@ func (rc *ChainAggregationCtx) DSL() []byte {
 	return v
 }
 
-func (e *ChainAggregationCtx) onBefore(chain types.ChainCtx, msg types.RuleMsg) (types.RuleMsg, error) {
+func (e *ChainAggregationCtx) onBefore(chainCtx types.ChainCtx, msg types.RuleMsg) (types.RuleMsg, error) {
 	var err error
 	for _, aop := range e.beforeAspects {
-		if aop.PointCut(NewChainContext(chain), msg) {
-			msg, err = aop.Before(NewChainContext(chain), msg)
+		if aop.PointCut(chainCtx, msg) {
+			msg, err = aop.Before(chainCtx, msg)
 		}
 	}
 	return msg, err
@@ -206,11 +206,11 @@ func (e *ChainAggregationCtx) onBefore(chain types.ChainCtx, msg types.RuleMsg) 
 
 // onEnd executes the list of end aspects when a branch of the rule chain ends.
 // onEnd 在规则链分支结束时执行结束切面列表。
-func (e *ChainAggregationCtx) onAfter(chain types.ChainCtx, msg types.RuleMsg) (types.RuleMsg, error) {
+func (e *ChainAggregationCtx) onAfter(chainCtx types.ChainCtx, msg types.RuleMsg) (types.RuleMsg, error) {
 	var err error
 	for _, aop := range e.afterAspects {
-		if aop.PointCut(NewChainContext(chain), msg) {
-			msg, err = aop.After(NewChainContext(chain), msg)
+		if aop.PointCut(chainCtx, msg) {
+			msg, err = aop.After(chainCtx, msg)
 		}
 	}
 	return msg, err

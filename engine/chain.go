@@ -18,6 +18,7 @@ package engine
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/bittoy/rule/types"
@@ -47,7 +48,7 @@ type ChainCtx struct {
 	// rootRuleContext is the root context for message processing within this rule chain,
 	// providing the entry point for message flow and execution coordination
 	// rootRuleContext 是此规则链内消息处理的根上下文，为消息流和执行协调提供入口点
-	rootRuleContext types.RuleContext
+	rootNodeId string
 
 	// aspects contains the list of AOP aspects applied to this rule chain,
 	// providing cross-cutting concerns like logging, validation, and metrics
@@ -88,7 +89,7 @@ func InitChainCtx(config types.Config, aspects types.AspectList, chainDef *types
 		chainCtx.nodes[item.Id] = ruleNodeCtx
 
 		if item.Type == types.RuleSubTypeStart {
-			chainCtx.rootRuleContext = NewRuleContext(chainCtx, nil, ruleNodeCtx)
+			chainCtx.rootNodeId = item.Id
 		}
 	}
 
@@ -146,7 +147,7 @@ func (rc *ChainCtx) GetNodeRoutes(id string) ([]types.RuleNodeRelation, bool) {
 	return relations, ok
 }
 
-func (rc *ChainCtx) GetNextNode(id string, relationType string) (types.NodeCtx, bool) {
+func (rc *ChainCtx) getNextNode(id string, relationType string) (types.NodeCtx, bool) {
 	relations, ok := rc.GetNodeRoutes(id)
 	if ok {
 		for _, item := range relations {
@@ -156,8 +157,10 @@ func (rc *ChainCtx) GetNextNode(id string, relationType string) (types.NodeCtx, 
 				}
 			}
 		}
+		// 父节点存在但是子分支不存在
 		return nil, true
 	}
+	// 父节点不存在子分支也不存在
 	return nil, false
 }
 
@@ -177,8 +180,8 @@ func (rc *ChainCtx) Init(_ types.Config, configuration types.Configuration) erro
 }
 
 // OnMsg processes incoming messages
-func (rc *ChainCtx) OnMsg(ctx context.Context, rCtx types.RuleContext, msg types.RuleMsg) error {
-	return rc.rootRuleContext.Tell(ctx, msg, types.DefaultRelationType)
+func (rc *ChainCtx) OnMsg(ctx context.Context, msg types.RuleMsg) (string, error) {
+	return "", rc.execute(ctx, msg)
 }
 
 // Destroy cleans up resources and executes destroy aspects
@@ -194,4 +197,70 @@ func (rc *ChainCtx) Destroy() {
 func (rc *ChainCtx) DSL() []byte {
 	v, _ := rc.config.Parser.EncodeChain(rc.selfDefinition)
 	return v
+}
+
+func (rc *ChainCtx) execute(ctx context.Context, msg types.RuleMsg) error {
+	currentNode, found := rc.GetNodeById(rc.rootNodeId)
+	if !found {
+		return errors.New("not found rootNode")
+	}
+	for currentNode != nil {
+		fmt.Printf("执行节点: %s (%s)\n", currentNode.Id(), currentNode.Type())
+
+		_, err := rc.onBefore(currentNode, msg, "")
+		if err != nil {
+			return err
+		}
+		relationType, err := currentNode.OnMsg(ctx, msg)
+		if err != nil {
+			return err
+		}
+		_, err = rc.onAfter(currentNode, msg, relationType)
+		if err != nil {
+			return err
+		}
+
+		if len(relationType) == 0 {
+			break
+		}
+		nodeCtx, found := rc.getNextNode(currentNode.Id(), relationType)
+		if !found {
+			return fmt.Errorf("node for id:%s not found", currentNode.Id())
+		}
+		if nodeCtx == nil {
+			return fmt.Errorf("node for id:%s branch: %s node not found", currentNode.Id(), relationType)
+		}
+		currentNode = nodeCtx
+	}
+	return nil
+}
+
+// 执行After aop
+func (rc *ChainCtx) onBefore(nodeCtx types.NodeCtx, msg types.RuleMsg, relationType string) (types.RuleMsg, error) {
+	// after aop
+	var err error
+	for _, aop := range rc.beforeAspects {
+		if aop.PointCut(nodeCtx, msg, relationType) {
+			msg, err = aop.Before(nodeCtx, msg, relationType)
+			if err != nil {
+				return msg, err
+			}
+		}
+	}
+	return msg, err
+}
+
+// 执行After aop
+func (rc *ChainCtx) onAfter(nodeCtx types.NodeCtx, msg types.RuleMsg, relationType string) (types.RuleMsg, error) {
+	// after aop
+	var err error
+	for _, aop := range rc.afterAspects {
+		if aop.PointCut(nodeCtx, msg, relationType) {
+			msg, err = aop.After(nodeCtx, msg, relationType)
+			if err != nil {
+				return msg, err
+			}
+		}
+	}
+	return msg, err
 }

@@ -320,7 +320,7 @@ func (e *ChainEngine) onMsg(ctx context.Context, msg types.RuleMsg) error {
 
 	// Process message with or without waiting
 	// 处理消息，可选择是否等待
-	if err := e.ruleChainCtx.OnMsg(ctx, NewChainContext(e.ruleChainCtx), msg); err != nil {
+	if _, err := e.ruleChainCtx.OnMsg(ctx, msg); err != nil {
 		return err
 	}
 
@@ -333,8 +333,8 @@ func (e *ChainEngine) onMsg(ctx context.Context, msg types.RuleMsg) error {
 func (e *ChainEngine) onBefore(msg types.RuleMsg) (types.RuleMsg, error) {
 	var err error
 	for _, aop := range e.beforeAspects {
-		if aop.PointCut(NewChainContext(e.ruleChainCtx), msg) {
-			msg, err = aop.Before(NewChainContext(e.ruleChainCtx), msg)
+		if aop.PointCut(e.ruleChainCtx, msg) {
+			msg, err = aop.Before(e.ruleChainCtx, msg)
 		}
 	}
 	return msg, err
@@ -345,8 +345,8 @@ func (e *ChainEngine) onBefore(msg types.RuleMsg) (types.RuleMsg, error) {
 func (e *ChainEngine) onAfter(msg types.RuleMsg) (types.RuleMsg, error) {
 	var err error
 	for _, aop := range e.afterAspects {
-		if aop.PointCut(NewChainContext(e.ruleChainCtx), msg) {
-			msg, err = aop.After(NewChainContext(e.ruleChainCtx), msg)
+		if aop.PointCut(e.ruleChainCtx, msg) {
+			msg, err = aop.After(e.ruleChainCtx, msg)
 		}
 	}
 	return msg, err

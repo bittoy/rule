@@ -5,19 +5,19 @@ import (
 )
 
 type EngineError struct {
-	ruleContext RuleContext
-	msg         RuleMsg
-	err         error
+	nodeCtx NodeCtx
+	msg     RuleMsg
+	err     error
 }
 
 func (e *EngineError) Error() string {
-	return fmt.Sprintf("EngineError: %s, relationType: %s", e.err.Error(), e.ruleContext.Self().DSL())
+	return fmt.Sprintf("EngineError: %s, input:%+v, nodeDSL: %s", e.err.Error(), e.msg.GetInput(), e.nodeCtx.DSL())
 }
 
-func NewEngineError(ruleContext RuleContext, msg RuleMsg, err error) *EngineError {
+func NewEngineError(nodeCtx NodeCtx, msg RuleMsg, err error) *EngineError {
 	return &EngineError{
-		msg:         msg,
-		err:         err,
-		ruleContext: ruleContext,
+		nodeCtx: nodeCtx,
+		msg:     msg,
+		err:     err,
 	}
 }

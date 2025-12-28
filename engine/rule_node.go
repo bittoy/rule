@@ -67,6 +67,8 @@ type RuleNodeCtx struct {
 	// 包括其类型、ID、配置参数和行为设置。
 	selfDefinition *types.BaseInfo
 
+	beforeAspects []types.NodeBeforeAspect
+	afterAspects  []types.NodeAfterAspect
 	// config holds the global rule engine configuration,
 	// providing access to component registry, parsers, and global settings.
 	// config 保存全局规则引擎配置，提供对组件注册表、解析器和全局设置的访问。
@@ -204,9 +206,9 @@ func (rn *RuleNodeCtx) DSL() []byte {
 // 参数：
 //   - ctx: Rule context for message processing  用于消息处理的规则上下文
 //   - msg: Message to be processed  要处理的消息
-func (rn *RuleNodeCtx) OnMsg(ctx context.Context, rCtx types.RuleContext, msg types.RuleMsg) error {
+func (rn *RuleNodeCtx) OnMsg(ctx context.Context, msg types.RuleMsg) (string, error) {
 	// 使用读锁保护Node字段的访问，与ReloadSelfFromDef的写锁互斥
-	return rn.Node.OnMsg(ctx, rCtx, msg)
+	return rn.Node.OnMsg(ctx, msg)
 }
 
 // Destroy safely destroys the embedded node

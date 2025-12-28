@@ -142,7 +142,7 @@ type NodeAspect interface {
 	// 返回：
 	//   - bool: true to apply aspect, false to skip
 	//     bool：true 应用切面，false 跳过
-	PointCut(ctx RuleContext, msg RuleMsg, relationType string) bool
+	PointCut(nodeCtx NodeCtx, msg RuleMsg, relationType string) bool
 }
 
 type ChainAspect interface {
@@ -167,7 +167,7 @@ type ChainAspect interface {
 	// 返回：
 	//   - bool: true to apply aspect, false to skip
 	//     bool：true 应用切面，false 跳过
-	PointCut(ctx RuleContext, msg RuleMsg) bool
+	PointCut(chainCtx ChainCtx, msg RuleMsg) bool
 }
 
 // BeforeAspect defines the interface for aspects that execute before node message processing.
@@ -206,7 +206,7 @@ type NodeBeforeAspect interface {
 	// 返回：
 	//   - RuleMsg: Modified message for node processing
 	//     RuleMsg：用于节点处理的修改后消息
-	Before(ctx RuleContext, msg RuleMsg, relationType string) (RuleMsg, error)
+	Before(nodeCtx NodeCtx, msg RuleMsg, relationType string) (RuleMsg, error)
 }
 
 // AfterAspect defines the interface for aspects that execute after node message processing.
@@ -247,12 +247,12 @@ type NodeAfterAspect interface {
 	// 返回：
 	//   - RuleMsg: Modified message for next processing
 	//     RuleMsg：用于下一步处理的修改后消息
-	After(ctx RuleContext, msg RuleMsg, relationType string) (RuleMsg, error)
+	After(nodeCtx NodeCtx, msg RuleMsg, relationType string) (RuleMsg, error)
 }
 
 type ChainBeforeAspect interface {
 	ChainAspect
-	Before(ctx RuleContext, msg RuleMsg) (RuleMsg, error)
+	Before(chainCtx ChainCtx, msg RuleMsg) (RuleMsg, error)
 }
 
 // EndAspect defines the interface for aspects executed when a rule chain branch ends.
@@ -262,7 +262,12 @@ type ChainBeforeAspect interface {
 // 这些切面在 engine.go onEnd() 方法中当执行分支完成时调用。
 type ChainAfterAspect interface {
 	ChainAspect
-	After(ctx RuleContext, msg RuleMsg) (RuleMsg, error)
+	After(chainCtx ChainCtx, msg RuleMsg) (RuleMsg, error)
+}
+
+type ChainAggregationAspect interface {
+	Aspect
+	PointCut(chainAggregationCtx ChainAggregationCtx, msg RuleMsg) bool
 }
 
 // StartAspect defines the interface for aspects executed before rule chain message processing.
@@ -271,7 +276,8 @@ type ChainAfterAspect interface {
 // StartAspect 定义在规则链消息处理之前执行的切面接口。
 // 这些切面在 engine.go onStart() 方法中在任何节点处理开始之前调用。
 type ChainAggregationBeforeAspect interface {
-	ChainBeforeAspect
+	ChainAggregationAspect
+	Before(chainAggregationCtx ChainAggregationCtx, msg RuleMsg) (RuleMsg, error)
 }
 
 // EndAspect defines the interface for aspects executed when a rule chain branch ends.
@@ -280,7 +286,13 @@ type ChainAggregationBeforeAspect interface {
 // EndAspect 定义在规则链分支结束时执行的切面接口。
 // 这些切面在 engine.go onEnd() 方法中当执行分支完成时调用。
 type ChainAggregationAfterAspect interface {
-	ChainAfterAspect
+	ChainAggregationAspect
+	After(chainAggregationCtx ChainAggregationCtx, msg RuleMsg) (RuleMsg, error)
+}
+
+type OnChainAggregationBeforeInitAspect interface {
+	ChainAggregationAspect
+	OnChainAggregationBeforeInit(config Config, def *ChainAggregation) error
 }
 
 // OnNodeBeforeInitAspect defines the interface for aspects executed before rule node initialization.
@@ -317,7 +329,7 @@ type OnNodeBeforeInitAspect interface {
 // OnChainBeforeInitAspect 定义在规则链初始化之前执行的切面接口。
 // 这些切面在 engine.go initChain() 方法中规则链创建之前调用。
 type OnChainBeforeInitAspect interface {
-	NodeAspect
+	ChainAspect
 
 	// OnChainBeforeInit is executed before rule chain initialization.
 	// If an error is returned, the chain creation will fail.
@@ -337,34 +349,6 @@ type OnChainBeforeInitAspect interface {
 	//   - error: Error to prevent chain creation, nil to continue
 	//     error：阻止链创建的错误，nil 表示继续
 	OnChainBeforeInit(config Config, def *Chain) error
-}
-
-// OnChainBeforeInitAspect defines the interface for aspects executed before rule chain initialization.
-// These aspects are called in engine.go initChain() method before the rule chain is created.
-//
-// OnChainBeforeInitAspect 定义在规则链初始化之前执行的切面接口。
-// 这些切面在 engine.go initChain() 方法中规则链创建之前调用。
-type OnChainAggregationBeforeInitAspect interface {
-	NodeAspect
-
-	// OnChainBeforeInit is executed before rule chain initialization.
-	// If an error is returned, the chain creation will fail.
-	//
-	// OnChainBeforeInit 在规则链初始化之前执行。
-	// 如果返回错误，链创建将失败。
-	//
-	// Parameters:
-	// 参数：
-	//   - config: Rule engine configuration
-	//     config：规则引擎配置
-	//   - def: Rule chain definition to be initialized
-	//     def：要初始化的规则链定义
-	//
-	// Returns:
-	// 返回：
-	//   - error: Error to prevent chain creation, nil to continue
-	//     error：阻止链创建的错误，nil 表示继续
-	OnChainAggregationBeforeInit(config Config, def *ChainAggregation) error
 }
 
 type AspectList []Aspect

@@ -102,18 +102,18 @@ func (x *EndNode) Init(ruleConfig types.Config, configuration types.Configuratio
 }
 
 // OnMsg processes the incoming message and triggers the end callback.
-func (x *EndNode) OnMsg(ctx context.Context, rCtx types.RuleContext, msg types.RuleMsg) error {
+func (x *EndNode) OnMsg(ctx context.Context, msg types.RuleMsg) (next string, err error) {
 	out, err := vm.Run(x.program, msg.GetInput())
 	if err != nil {
-		return types.NewEngineError(rCtx, msg, err)
+		return "", err
 	}
 	if result, ok := out.(map[string]any); ok {
 		msg.ClearInnerData()
 		msg.SetChainOutput(result)
 	} else {
-		return types.NewEngineError(rCtx, msg, errors.New("返回类型不匹配"))
+		return "", errors.New("返回类型不匹配")
 	}
-	return nil
+	return "", nil
 }
 
 func (x *EndNode) Destroy() {

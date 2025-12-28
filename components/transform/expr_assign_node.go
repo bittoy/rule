@@ -102,16 +102,16 @@ func (x *ExprAssignNode) Init(config types.Config, configuration types.Configura
 }
 
 // OnMsg 处理消息，执行JavaScript脚本确定路由路径
-func (x *ExprAssignNode) OnMsg(ctx context.Context, rCtx types.RuleContext, msg types.RuleMsg) error {
+func (x *ExprAssignNode) OnMsg(ctx context.Context, msg types.RuleMsg) (next string, err error) {
 	out, err := vm.Run(x.program, msg.GetInput())
 	if err != nil {
-		return types.NewEngineError(rCtx, msg, err)
+		return "", err
 	}
 	if result, ok := out.(map[string]any); ok {
 		msg.CopyInnerData(result)
-		return rCtx.TellNext(ctx, msg, types.DefaultRelationType)
+		return types.DefaultRelationType, nil
 	}
-	return types.NewEngineError(rCtx, msg, errors.New("返回类型不匹配"))
+	return "", errors.New("返回类型不匹配")
 }
 
 // Destroy 清理资源

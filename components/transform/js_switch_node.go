@@ -39,7 +39,7 @@ import (
 )
 
 // JsSwitchReturnFormatErr JavaScript脚本必须返回数组
-var JsSwitchReturnFormatErr = errors.New("return the value is not an array")
+var JsSwitchReturnFormatErr = errors.New("return the value is not string")
 
 // init 注册JsSwitchNode组件
 func init() {
@@ -115,30 +115,30 @@ func (x *JsSwitchNode) Init(config types.Config, configuration types.Configurati
 }
 
 // OnMsg 处理消息，执行JavaScript脚本确定路由路径
-func (x *JsSwitchNode) OnMsg(ctx context.Context, rCtx types.RuleContext, msg types.RuleMsg) error {
+func (x *JsSwitchNode) OnMsg(ctx context.Context, msg types.RuleMsg) (string, error) {
 	vm := x.pool.Get().(*goja.Runtime)
 	defer x.pool.Put(vm)
 
 	fnVal := vm.Get("jsSwitch")
 	if fnVal == nil {
-		return fmt.Errorf("function jsSwitch not found")
+		return "", errors.New("function jsSwitch not found")
 	}
 
 	f, ok := goja.AssertFunction(fnVal)
 	if !ok {
-		return errors.New("jsSwitch is not a function")
+		return "", errors.New("jsSwitch is not a function")
 	}
 
 	// Execute function
 	res, err := f(goja.Undefined(), vm.ToValue(msg.GetInput()))
 	if err != nil {
-		return types.NewEngineError(rCtx, msg, err)
+		return "", err
 	}
 
 	if result, ok := res.Export().(string); ok {
-		return rCtx.TellNext(ctx, msg, result)
+		return result, nil
 	}
-	return types.NewEngineError(rCtx, msg, JsSwitchReturnFormatErr)
+	return "", JsSwitchReturnFormatErr
 }
 
 // Destroy 清理资源
