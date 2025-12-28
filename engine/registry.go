@@ -20,9 +20,9 @@ import (
 	"fmt"
 	"sync"
 
-	"rule/components/common"
-	"rule/components/transform"
-	"rule/types"
+	"github.com/bittoy/rule/components/common"
+	"github.com/bittoy/rule/components/transform"
+	"github.com/bittoy/rule/types"
 )
 
 // PluginsSymbol is the symbol used to identify plugins in a Go plugin file.

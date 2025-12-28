@@ -17,8 +17,8 @@
 package engine
 
 import (
-	"rule/types"
-	"rule/utils/json"
+	"github.com/bittoy/rule/types"
+	"github.com/bittoy/rule/utils/json"
 )
 
 // JsonParser Json

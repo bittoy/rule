@@ -18,7 +18,8 @@ package common
 
 import (
 	"context"
-	"rule/types"
+
+	"github.com/bittoy/rule/types"
 )
 
 // init registers the EndNode component with the default registry.

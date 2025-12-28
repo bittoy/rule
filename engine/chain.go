@@ -20,8 +20,8 @@ import (
 	"context"
 	"fmt"
 
-	"rule/types"
-	"rule/utils/maps"
+	"github.com/bittoy/rule/types"
+	"github.com/bittoy/rule/utils/maps"
 )
 
 type ChainCtx struct {

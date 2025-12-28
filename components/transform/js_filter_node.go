@@ -16,8 +16,8 @@ import (
 	"fmt"
 	"sync"
 
-	"rule/types"
-	"rule/utils/maps"
+	"github.com/bittoy/rule/types"
+	"github.com/bittoy/rule/utils/maps"
 
 	"github.com/dop251/goja"
 )

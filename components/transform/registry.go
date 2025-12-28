@@ -17,7 +17,7 @@
 package transform
 
 import (
-	"rule/types"
+	"github.com/bittoy/rule/types"
 )
 
 var Registry = &types.SafeComponentSlice{}

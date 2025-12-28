@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"sort"
 
-	"rule/types"
-	"rule/utils/maps"
+	"github.com/bittoy/rule/types"
+	"github.com/bittoy/rule/utils/maps"
 )
 
 type Configuration struct {

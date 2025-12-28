@@ -22,7 +22,7 @@ import (
 	"reflect"
 	"strings"
 
-	"rule/types"
+	"github.com/bittoy/rule/types"
 )
 
 var (

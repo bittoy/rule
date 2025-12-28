@@ -1,8 +1,8 @@
 package aspect
 
 import (
-	"rule/types"
-	"rule/types/metrics"
+	"github.com/bittoy/rule/types"
+	"github.com/bittoy/rule/types/metrics"
 )
 
 // MetricsAspect implements comprehensive metrics collection for rule engine execution.

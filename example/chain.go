@@ -6,9 +6,9 @@ import (
 	"log"
 	"time"
 
-	"rule/builtin/aspect"
-	"rule/engine"
-	"rule/types"
+	"github.com/bittoy/rule/builtin/aspect"
+	"github.com/bittoy/rule/engine"
+	"github.com/bittoy/rule/types"
 )
 
 var (

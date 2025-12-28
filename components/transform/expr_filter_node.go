@@ -17,8 +17,8 @@ import (
 	"github.com/expr-lang/expr"
 	"github.com/expr-lang/expr/vm"
 
-	"rule/types"
-	"rule/utils/maps"
+	"github.com/bittoy/rule/types"
+	"github.com/bittoy/rule/utils/maps"
 )
 
 // init 注册ExprFilterNode组件

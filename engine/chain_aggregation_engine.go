@@ -8,9 +8,9 @@ import (
 	"time"
 	"unsafe"
 
-	"rule/builtin/aspect"
-	"rule/types"
-	"rule/types/metrics"
+	"github.com/bittoy/rule/builtin/aspect"
+	"github.com/bittoy/rule/types"
+	"github.com/bittoy/rule/types/metrics"
 )
 
 // Ensuring RuleEngine implements types.RuleEngine interface.

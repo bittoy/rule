@@ -1,9 +1,9 @@
 package engine
 
 import (
-	"rule/builtin/aspect"
-	"rule/builtin/funcs"
-	"rule/types"
+	"github.com/bittoy/rule/builtin/aspect"
+	"github.com/bittoy/rule/builtin/funcs"
+	"github.com/bittoy/rule/types"
 )
 
 // 这些切面在初始化期间通过 initBuiltinsAspects() 方法自动添加到规则引擎中。

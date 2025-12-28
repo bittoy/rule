@@ -18,7 +18,8 @@ package aspect
 
 import (
 	"fmt"
-	"rule/types"
+
+	"github.com/bittoy/rule/types"
 )
 
 var (

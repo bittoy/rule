@@ -20,9 +20,10 @@ import (
 	"context"
 	"errors"
 	"reflect"
-	"rule/types"
-	"rule/utils/maps"
 	"strings"
+
+	"github.com/bittoy/rule/types"
+	"github.com/bittoy/rule/utils/maps"
 
 	"github.com/expr-lang/expr"
 	"github.com/expr-lang/expr/vm"

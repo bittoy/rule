@@ -1,4 +1,4 @@
-module rule
+module github.com/bittoy/rule
 
 go 1.25.0
 

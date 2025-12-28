@@ -20,7 +20,7 @@ import (
 	"context"
 	"fmt"
 
-	"rule/types"
+	"github.com/bittoy/rule/types"
 )
 
 const (

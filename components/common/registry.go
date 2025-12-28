@@ -16,7 +16,7 @@
 
 package common
 
-import "rule/types"
+import "github.com/bittoy/rule/types"
 
 // Registry 通用组件注册表
 // Registry is the common components registry

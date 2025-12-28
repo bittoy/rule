@@ -19,7 +19,7 @@ package engine
 import (
 	"context"
 
-	"rule/types"
+	"github.com/bittoy/rule/types"
 )
 
 // DefaultRuleContext is the default context for message processing in the rule engine.

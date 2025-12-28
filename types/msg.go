@@ -19,8 +19,7 @@ package types
 import (
 	"time"
 
-	"rule/utils/maps"
-
+	"github.com/bittoy/rule/utils/maps"
 	"github.com/gofrs/uuid/v5"
 )
 

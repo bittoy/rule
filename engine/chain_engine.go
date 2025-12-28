@@ -24,7 +24,7 @@ import (
 	"time"
 	"unsafe"
 
-	"rule/types"
+	"github.com/bittoy/rule/types"
 )
 
 // Ensuring RuleEngine implements types.RuleEngine interface.

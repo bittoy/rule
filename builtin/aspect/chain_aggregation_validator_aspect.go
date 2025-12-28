@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"sync"
 
-	"rule/types"
+	"github.com/bittoy/rule/types"
 )
 
 var (
