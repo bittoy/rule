@@ -53,7 +53,6 @@ func NewChainAggregationEngine(def []byte, opts ...types.EngineOption) (types.En
 		return nil, errors.New("def can not nil")
 	}
 
-	// Create a new RuleEngine with the Id
 	// 使用 ID 创建新的 RuleEngine
 	chainAggregationEngine := &ChainAggregationEngine{
 		config: NewConfig(),
@@ -68,33 +67,27 @@ func NewChainAggregationEngine(def []byte, opts ...types.EngineOption) (types.En
 	return chainAggregationEngine, err
 }
 
-// Id returns the unique identifier of the rule engine instance.
 // Id 返回规则引擎实例的唯一标识符。
 func (e *ChainAggregationEngine) Id() string {
 	return e.chainAggregationCtx.Id()
 }
 
-// Id returns the unique identifier of the rule engine instance.
-// Id 返回规则引擎实例的唯一标识符。
+// Name 返回规则引擎实例的唯一标识符。
 func (e *ChainAggregationEngine) Name() string {
 	return e.chainAggregationCtx.Name()
 }
 
-// GetNodeById retrieves a node context by its ID
+// TerminalOnErr 是否出错推出
 func (rc *ChainAggregationEngine) TerminalOnErr() bool {
 	return rc.chainAggregationCtx.TerminalOnErr()
 }
 
-// SetConfig updates the configuration of the rule engine.
-// This should be called before initialization for best results.
 // SetConfig 更新规则引擎的配置。
 // 为了获得最佳效果，应在初始化前调用。
 func (e *ChainAggregationEngine) SetConfig(config types.Config) {
 	e.config = config
 }
 
-// SetAspects updates the list of aspects used by the rule engine.
-// Aspects provide cross-cutting functionality like logging and validation.
 // SetAspects 更新规则引擎使用的切面列表。
 // 切面提供如日志和验证等横切功能。
 func (e *ChainAggregationEngine) SetAspects(aspects ...types.Aspect) {

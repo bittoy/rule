@@ -138,6 +138,7 @@ func (rc *ChainAggregationCtx) Init(_ types.Config, configuration types.Configur
 // OnMsg processes incoming messages
 func (rc *ChainAggregationCtx) OnMsg(ctx context.Context, rCtx types.RuleContext, msg types.RuleMsg) error {
 	var output = map[string]map[string]any{}
+	var chainAggregationPriority []string
 	for _, chain := range rc.chains {
 		msg, err := rc.onBefore(chain, msg)
 		if err != nil {
@@ -155,9 +156,12 @@ func (rc *ChainAggregationCtx) OnMsg(ctx context.Context, rCtx types.RuleContext
 			return err
 		}
 		output[chain.Id()] = msg.GetChainOutput()
+		chainAggregationPriority = append(chainAggregationPriority, chain.Id())
 	}
+
 	msg.SetChainOutput(nil)
 	msg.SetChainAggregationOutput(output)
+	msg.SetChainAggregationPriority(chainAggregationPriority)
 	return nil
 }
 

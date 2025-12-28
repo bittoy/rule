@@ -149,9 +149,10 @@ type RuleMsg struct {
 // SharedData represents a thread-safe copy-on-write data structure for message payload.
 // This improved version addresses potential race conditions in the original implementation.
 type RuleData struct {
-	input                  map[string]any
-	chainOutput            map[string]any
-	chainAggregationOutput map[string]map[string]any
+	input                    map[string]any
+	chainOutput              map[string]any
+	chainAggregationOutput   map[string]map[string]any
+	chainAggregationPriority []string
 }
 
 // NewMsgWithJsonDataFromBytes creates a new message instance with JSON data from []byte.
@@ -209,4 +210,14 @@ func (sd *RuleMsg) SetChainAggregationOutput(output map[string]map[string]any) {
 // IsEmpty checks if the data is empty.
 func (sd *RuleMsg) GetChainAggregationOutput() map[string]map[string]any {
 	return sd.data.chainAggregationOutput
+}
+
+// IsEmpty checks if the data is empty.
+func (sd *RuleMsg) SetChainAggregationPriority(chainAggregationPriority []string) {
+	sd.data.chainAggregationPriority = chainAggregationPriority
+}
+
+// IsEmpty checks if the data is empty.
+func (sd *RuleMsg) GetChainAggregationPriority() []string {
+	return sd.data.chainAggregationPriority
 }

@@ -20,44 +20,9 @@ import (
 	"context"
 )
 
-// RuleEngineOption defines a function type for configuring a RuleEngine.
-// It follows the functional options pattern for flexible configuration.
-//
-// RuleEngineOption 定义了用于配置 RuleEngine 的函数类型。
-// 它遵循函数选项模式，提供灵活的配置。
-//
-// Example usage:
-// 使用示例：
-//
-//	engine, err := rulego.New("myEngine", ruleChainDef,
-//		types.WithConfig(myConfig),
-//		types.WithAspects(debugAspect, metricsAspect))
 type EngineOption func(Engine) error
 
-// RuleEngine is the core interface for a rule engine instance.
-// Each RuleEngine manages a single root rule chain and provides methods for
-// message processing, configuration updates, and lifecycle management.
-//
-// RuleEngine 是规则引擎实例的核心接口。
-// 每个 RuleEngine 管理一个根规则链，并提供消息处理、配置更新和生命周期管理的方法。
-//
-// Key Features:
-// 主要特性：
-//   - Rule chain execution and management  规则链执行和管理
-//   - Dynamic configuration reloading  动态配置重载
-//   - Aspect-oriented programming support  面向切面编程支持
-//   - Performance metrics collection  性能指标收集
-//   - Concurrent message processing  并发消息处理
-//
-// Lifecycle:
-// 生命周期：
-//  1. Create engine with New() or Load()  使用 New() 或 Load() 创建引擎
-//  2. Process messages with OnMsg()  使用 OnMsg() 处理消息
-//  3. Update configuration with ReloadSelf()  使用 ReloadSelf() 更新配置
-//  4. Clean up resources with Stop()  使用 Stop() 清理资源
 type Engine interface {
-	// Id returns the unique identifier of the RuleEngine.
-	// This ID is used for engine lookup and management within pools.
 	// Id 返回 RuleEngine 的唯一标识符。
 	// 此 ID 用于池中的引擎查找和管理。
 	Id() string
