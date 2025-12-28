@@ -41,7 +41,7 @@ import (
 	"context"
 	"errors"
 
-	"rule/types"
+	"github.com/bittoy/rule/types"
 
 	"github.com/dop251/goja"
 )

@@ -58,6 +58,7 @@ package maps
 import (
 	"strings"
 
+	"github.com/fatih/structs"
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -79,6 +80,10 @@ func Map2Struct(input any, output any) error {
 		return err
 	}
 	return nil
+}
+
+func Struct2Map(input any, output any) {
+	output = structs.Map(input)
 }
 
 // Get 获取map中的字段，支持嵌套结构获取，例如fieldName.subFieldName.xx

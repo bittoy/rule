@@ -9,19 +9,6 @@ import (
 	"github.com/bittoy/rule/utils/maps"
 )
 
-type Configuration struct {
-	Aggregation Aggregation `json:"aggregation"`
-}
-
-type Aggregation struct {
-	Type       string `json:"type"`
-	Method     string `json:"method"`
-	Thresholds struct {
-		Action    string `json:"action"`
-		ScoreExpr string `json:"scoreExpr"`
-	} `json:"thresholds"`
-}
-
 type ChainAggregationCtx struct {
 	// SelfDefinition contains the complete rule chain definition including
 	// metadata, nodes, connections, and configuration
@@ -51,7 +38,11 @@ type ChainAggregationCtx struct {
 	beforeAspects []types.ChainBeforeAspect
 	afterAspects  []types.ChainAfterAspect
 
-	configuration Configuration
+	chainAggregationNode types.Node
+
+	Aggregation types.ChainCtx
+
+	chainAggregationConfiguration types.ChainAggregationConfiguration
 }
 
 func InitChainAggregationCtx(config types.Config, aspects types.AspectList, chainAggregationDef *types.ChainAggregation) (*ChainAggregationCtx, error) {
@@ -86,7 +77,7 @@ func InitChainAggregationCtx(config types.Config, aspects types.AspectList, chai
 
 	chainAggregationCtx.beforeAspects, chainAggregationCtx.afterAspects = aspects.GetChainAspects()
 
-	err := maps.Map2Struct(chainAggregationDef.Configuration, &chainAggregationCtx.configuration)
+	err := maps.Map2Struct(chainAggregationDef.Configuration, &chainAggregationCtx.chainAggregationConfiguration)
 	if err != nil {
 		return nil, err
 	}
@@ -138,7 +129,9 @@ func (rc *ChainAggregationCtx) Init(_ types.Config, configuration types.Configur
 // OnMsg processes incoming messages
 func (rc *ChainAggregationCtx) OnMsg(ctx context.Context, rCtx types.RuleContext, msg types.RuleMsg) error {
 	var output = map[string]map[string]any{}
-	var chainAggregationPriority []string
+	var chainResult types.ChainResult
+	var chainAggregationResult types.ChainAggregationResult
+	var aggregationOutput map[string]any
 	for _, chain := range rc.chains {
 		msg, err := rc.onBefore(chain, msg)
 		if err != nil {
@@ -155,13 +148,34 @@ func (rc *ChainAggregationCtx) OnMsg(ctx context.Context, rCtx types.RuleContext
 		if err != nil {
 			return err
 		}
+
 		output[chain.Id()] = msg.GetChainOutput()
-		chainAggregationPriority = append(chainAggregationPriority, chain.Id())
+
+		err = maps.Map2Struct(msg.GetChainOutput(), &chainResult)
+		if err != nil {
+			return err
+		}
+
+		if chainResult.Terminate {
+			chainAggregationResult.Score = chainResult.Score
+			chainAggregationResult.Terminate = true
+			chainAggregationResult.Action = chainResult.Action
+			break
+		}
+
+		chainAggregationResult.Score += chainResult.Score
+		chainAggregationResult.Reasons = append(chainAggregationResult.Reasons, chainResult.Reason)
+		chainAggregationResult.Tags = append(chainAggregationResult.Tags, chainResult.Tags...)
 	}
 
+	if !chainAggregationResult.Terminate {
+
+	}
+
+	maps.Struct2Map(chainAggregationResult, aggregationOutput)
 	msg.SetChainOutput(nil)
 	msg.SetChainAggregationOutput(output)
-	msg.SetChainAggregationPriority(chainAggregationPriority)
+	msg.SetAggregationOutput(aggregationOutput)
 	return nil
 }
 

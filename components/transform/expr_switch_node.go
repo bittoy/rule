@@ -29,21 +29,6 @@ import (
 	"github.com/expr-lang/expr/vm"
 )
 
-//规则链节点配置示例：
-//{
-//        "id": "s1",
-//        "type": "switch",
-//        "name": "switch",
-//        "debugMode": false,
-//        "configuration": {
-//         "cases": [
-//           {"case": "msg.temperature > 50", "then": "case1"}
-//         ]
-//        }
-//      }
-
-// init 注册SwitchNode组件
-// init registers the SwitchNode component with the default registry.
 func init() {
 	Registry.Add(&ExprSwitchNode{})
 }
@@ -65,7 +50,7 @@ type ExprSwitchNodeConfiguration struct {
 	// student=="3" ? "A" : ((score > 75 && level == "B")|| student == "C") ? "B" : (score > 60) ? "C" : "Default"
 	Script string `json:"script"`
 
-	Cases []Case `json:"cases"`
+	Cases []types.Case `json:"cases"`
 }
 
 // SwitchNode 基于表达式评估提供条件消息路由的过滤组件

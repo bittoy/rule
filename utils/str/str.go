@@ -37,8 +37,8 @@ import (
 	"strings"
 	"time"
 
-	"rule/utils/json"
-	"rule/utils/maps"
+	"github.com/bittoy/rule/utils/json"
+	"github.com/bittoy/rule/utils/maps"
 )
 
 // VarPrefix 模板变量前缀

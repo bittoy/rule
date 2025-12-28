@@ -107,9 +107,9 @@ func (x *EndNode) OnMsg(ctx context.Context, rCtx types.RuleContext, msg types.R
 	if err != nil {
 		return types.NewEngineError(rCtx, msg, err)
 	}
-	if formatData, ok := out.(map[string]any); ok {
+	if result, ok := out.(map[string]any); ok {
 		msg.ClearInnerData()
-		msg.SetChainOutput(formatData)
+		msg.SetChainOutput(result)
 	} else {
 		return types.NewEngineError(rCtx, msg, errors.New("返回类型不匹配"))
 	}

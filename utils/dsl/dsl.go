@@ -20,8 +20,8 @@ import (
 	"regexp"
 	"strings"
 
-	"rule/types"
-	"rule/utils/str"
+	"github.com/bittoy/rule/types"
+	"github.com/bittoy/rule/utils/str"
 )
 
 const FieldNameScript = "script"

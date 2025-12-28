@@ -63,39 +63,11 @@ type ChainEngine struct {
 	callbacks types.Callbacks
 }
 
-// NewRuleEngine creates a new RuleEngine instance with the given ID and definition.
-// It applies the provided RuleEngineOptions during the creation process.
-//
-// NewRuleEngine 使用给定的 ID 和定义创建新的 RuleEngine 实例。
-// 它在创建过程中应用提供的 RuleEngineOptions。
-//
-// Parameters:
-// 参数：
-//   - id: Unique identifier for the rule engine (can be empty to use chain ID)
-//     规则引擎的唯一标识符（可以为空以使用链 ID）
-//   - def: Rule chain definition in JSON or other supported format
-//     JSON 或其他支持格式的规则链定义
-//   - opts: Optional configuration functions to customize the engine
-//     可选的配置函数来自定义引擎
-//
-// Returns:
-// 返回：
-//   - *RuleEngine: Initialized rule engine instance  已初始化的规则引擎实例
-//   - error: Initialization error if any  如果有的话，初始化错误
-//
-// The creation process involves:
-// 创建过程包括：
-//  1. Parsing the rule chain definition  解析规则链定义
-//  2. Initializing all components and their relationships  初始化所有组件及其关系
-//  3. Setting up aspects and callback functions  设置切面和回调函数
-//  4. Validating the configuration  验证配置
-//  5. Configuring backpressure control for memory safety  配置背压控制以确保内存安全
 func NewChainEngine(def []byte, opts ...types.EngineOption) (types.Engine, error) {
 	if len(def) == 0 {
 		return nil, errors.New("def can not nil")
 	}
 
-	// Create a new RuleEngine with the Id
 	// 使用 ID 创建新的 RuleEngine
 	ruleEngine := &ChainEngine{
 		config: NewConfig(),

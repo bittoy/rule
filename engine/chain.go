@@ -21,7 +21,6 @@ import (
 	"fmt"
 
 	"github.com/bittoy/rule/types"
-	"github.com/bittoy/rule/utils/maps"
 )
 
 type ChainCtx struct {
@@ -58,7 +57,7 @@ type ChainCtx struct {
 	beforeAspects []types.NodeBeforeAspect
 	afterAspects  []types.NodeAfterAspect
 
-	configuration Configuration
+	configuration types.Configuration
 }
 
 func InitChainCtx(config types.Config, aspects types.AspectList, chainDef *types.Chain) (*ChainCtx, error) {
@@ -79,11 +78,6 @@ func InitChainCtx(config types.Config, aspects types.AspectList, chainDef *types
 	}
 
 	chainCtx.beforeAspects, chainCtx.afterAspects = aspects.GetNodeAspects()
-
-	err := maps.Map2Struct(chainDef.Configuration, &chainCtx.configuration)
-	if err != nil {
-		return nil, err
-	}
 
 	// Load all node information
 	for _, item := range chainDef.Metadata.Nodes {

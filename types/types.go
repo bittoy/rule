@@ -869,3 +869,33 @@ type Callbacks struct {
 	//     id：被删除实体的标识符（链或节点）
 	OnDeleted OnDeleted
 }
+
+type Case struct {
+	Case string `json:"case"`
+	Then string `json:"then"`
+}
+
+type ChainAggregationConfiguration struct {
+	Aggregation Aggregation
+}
+
+type Aggregation struct {
+	Cases []Case
+}
+
+type ChainResult struct {
+	Id        string
+	Score     int
+	Terminate bool
+	Action    string
+	Reason    string
+	Tags      []string
+}
+
+type ChainAggregationResult struct {
+	Score     int
+	Terminate bool
+	Action    string
+	Reasons   []string
+	Tags      []string
+}

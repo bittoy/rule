@@ -2,12 +2,11 @@ package transform
 
 import "strings"
 
-type Case struct {
-	Case string `json:"case"`
-	Then string `json:"then"`
-}
+import (
+	"github.com/bittoy/rule/types"
+)
 
-func genExprScriptByCases(cases []Case) string {
+func genExprScriptByCases(cases []types.Case) string {
 	var script = strings.Builder{}
 
 	for _, v := range cases {

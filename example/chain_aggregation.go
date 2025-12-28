@@ -291,7 +291,7 @@ func chainAggregationEngine(ruleChainFile string) {
 	if err != nil {
 		log.Fatalf("Failed to OnMsg: %v", err)
 	}
-	fmt.Println("OnMsg data input:", msg.GetInput(), "OnMsg data output:", msg.GetChainAggregationOutput(), "OnMsg data chainPriority:", msg.GetChainAggregationPriority())
+	fmt.Println("OnMsg data input:", msg.GetInput(), "OnMsg data output:", msg.GetChainAggregationOutput())
 	fmt.Println("OnMsg cost:", time.Since(now))
 }
 

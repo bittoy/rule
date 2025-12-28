@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/dop251/goja"
 )
 
@@ -32,7 +33,5 @@ func main() {
 		res, _ := calcFunc(goja.Undefined(), vm.ToValue(i), vm.ToValue(5))
 		fmt.Println("res =", res)
 	}
-
-	var vars = map[string]any{"a": "b"}
 
 }
